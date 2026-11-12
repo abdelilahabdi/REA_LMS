@@ -1,0 +1,92 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 {
+  color: #2563eb;
+}
+
+section {
+  margin-top: 24px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+}
+
+
+.course-card {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.course-card h3 {
+  margin-top: 0;
+  color: #2563eb;
+}
+
+form div {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+input,
+select,
+button {
+  padding: 10px;
+  font: inherit;
+}
+
+input {
+  width: 100%;
+  max-width: 400px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+}
+
+input:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+[role="alert"] {
+  color: #b91c1c;
+}
+
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+nav button[aria-pressed="true"] {
+  background-color: #2563eb;
+  color: white;
+}
