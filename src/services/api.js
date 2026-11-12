@@ -44,3 +44,24 @@ export async function getMyProfile (token) {
     }
     return result.data ;
 }
+
+
+export async function getCourses() {
+  const response = await fetch(API_URL + "/courses");
+  const result = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(
+      result.message || "Impossible de charger les cours."
+    );
+
+    error.status = response.status;
+    throw error;
+  }
+
+  if (!Array.isArray(result.data)) {
+    throw new Error("Le serveur a renvoyé une liste de cours invalide.");
+  }
+
+  return result.data;
+}
