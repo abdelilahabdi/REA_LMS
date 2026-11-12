@@ -1,3 +1,5 @@
+import CourseCatalog from "../CourseCatalog";
+
 function AdminLayout(props) {
   function showHome() {
     props.onNavigate("home");
@@ -53,10 +55,7 @@ function AdminLayout(props) {
       )}
 
       {props.currentView === "courses" && (
-        <div>
-          <h3>Catalogue des cours</h3>
-          <p>Les cours ne sont pas encore chargés.</p>
-        </div>
+        <CourseCatalog />
       )}
     </section>
   );
