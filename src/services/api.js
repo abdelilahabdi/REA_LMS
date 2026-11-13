@@ -65,3 +65,34 @@ export async function getCourses() {
 
   return result.data;
 }
+
+export async function getMyEnrollments(token) {
+  const response = await fetch(API_URL + "/enrollments/me", {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+
+  
+  const result = await response.json().catch(function () {
+    return null;
+  });
+
+  if (!response.ok) {
+    const message =
+      result && result.message
+        ? result.message
+        : "Impossible de charger vos inscriptions.";
+
+    const error = new Error(message);
+    error.status = response.status;
+
+    throw error;
+  }
+
+  if (!Array.isArray(result)) {
+    throw new Error("Le serveur a renvoyé une liste invalide.");
+  }
+
+  return result;
+}

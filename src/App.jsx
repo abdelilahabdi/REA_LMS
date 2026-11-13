@@ -6,7 +6,9 @@ import LearnerLayout from "./layouts/LearnerLayout";
 function App() {
   const [session, setSession] = useState(null);
   const [currentView , setCurrentView] = useState("home");
+  const [sessionMessage, setSessionMessage] = useState("");
   function handleLogin(newSession) {
+    setSessionMessage("");
     setCurrentView("home");
     setSession(newSession);
   }
@@ -14,7 +16,16 @@ function App() {
   function handleLogout() {
     setSession(null);
     setCurrentView("home");
+    setSessionMessage("");
   }
+
+
+  function handleSessionExpired() {
+  setSession(null);
+  setCurrentView("home");
+  setSessionMessage("Votre session a expiré. Veuillez vous reconnecter.");
+}
+
 
   function handleNavigate(view) {
   setCurrentView(view);
@@ -23,6 +34,10 @@ function App() {
   if (session === null) {
     return (
       <main>
+        {sessionMessage !== "" && (
+        <p role="alert">{sessionMessage}</p>
+        )}
+        
         <LoginForm onLogin={handleLogin} />
       </main>
     );
@@ -54,7 +69,10 @@ function App() {
 
       {role === "learner" && (
         <ProtectedView session={session} allowedRoles={["learner"]}>
-          <LearnerLayout />
+          <LearnerLayout
+          token={session.token}
+          onSessionExpired={handleSessionExpired}
+          />
         </ProtectedView>
       )}
 
