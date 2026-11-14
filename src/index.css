@@ -90,3 +90,42 @@ nav button[aria-pressed="true"] {
   background-color: #2563eb;
   color: white;
 }
+
+
+.user-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.users-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.users-layout article,
+.user-details {
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+
+.users-layout > * {
+  min-width: 0;
+}
+
+.users-layout button[aria-pressed="true"] {
+  background: #2563eb;
+  color: white;
+}
+
+@media (max-width: 700px) {
+  .users-layout {
+    grid-template-columns: 1fr;
+  }
+}

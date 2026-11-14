@@ -63,6 +63,8 @@ function App() {
           <AdminLayout 
           currentView={currentView}
           onNavigate={handleNavigate}
+          token={session.token}
+          onSessionExpired={handleSessionExpired}
           />
           </ProtectedView>
       )}

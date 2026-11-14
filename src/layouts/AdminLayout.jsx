@@ -1,4 +1,5 @@
 import CourseCatalog from "../CourseCatalog";
+import UserManagement from "../components/UserManagement";
 
 function AdminLayout(props) {
   function showHome() {
@@ -48,10 +49,10 @@ function AdminLayout(props) {
       )}
 
       {props.currentView === "users" && (
-        <div>
-          <h3>Gestion des utilisateurs</h3>
-          <p>Les utilisateurs ne sont pas encore chargés.</p>
-        </div>
+        <UserManagement
+          token={props.token}
+          onSessionExpired={props.onSessionExpired}
+        />
       )}
 
       {props.currentView === "courses" && (

@@ -96,3 +96,33 @@ export async function getMyEnrollments(token) {
 
   return result;
 }
+
+export async function getUsers(token) {
+  const response = await fetch(API_URL + "/users", {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+
+  const result = await response.json().catch(function () {
+    return null;
+  });
+
+  if (!response.ok) {
+    const message =
+      result && result.message
+        ? result.message
+        : "Impossible de charger les utilisateurs.";
+
+    const error = new Error(message);
+    error.status = response.status;
+
+    throw error;
+  }
+
+  if (!result || !Array.isArray(result.data)) {
+    throw new Error("Le serveur a renvoyé une liste invalide.");
+  }
+
+  return result.data;
+}
