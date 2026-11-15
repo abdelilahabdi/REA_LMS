@@ -3,6 +3,7 @@ import LoginForm from "./components/LoginForm";
 import ProtectedView from "./components/ProtectedView";
 import AdminLayout from "./layouts/AdminLayout";
 import LearnerLayout from "./layouts/LearnerLayout";
+import AppShell from "./components/AppShell";
 function App() {
   const [session, setSession] = useState(null);
   const [currentView , setCurrentView] = useState("home");
@@ -46,17 +47,7 @@ function App() {
   const role = session.user.role ;
 
   return (
-    <main>
-      <header>
-        <h1>Bienvenue {session.user.name}</h1>
-
-        <p>Email : {session.user.email}</p>
-        <p>Rôle : {role}</p>
-
-        <button type="button" onClick={handleLogout}>
-          Déconnexion
-        </button>
-      </header>
+    <AppShell user={session.user} onLogout={handleLogout}>
 
       {role === "admin" && (
         <ProtectedView session={session} allowedRoles={["admin"]}>
@@ -85,7 +76,7 @@ function App() {
       )}
 
   
-    </main> 
+    </AppShell> 
     
   );
 }
