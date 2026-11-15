@@ -126,3 +126,44 @@ export async function getUsers(token) {
 
   return result.data;
 }
+
+
+export async function saveUser(token, userId, values) {
+  let path = "/users";
+  let method = "POST";
+
+  if (userId) {
+    path = "/users/" + userId;
+    method = "PUT";
+  }
+
+  const response = await fetch(API_URL + path, {
+    method: method,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify(values),
+  });
+
+  const result = await response.json().catch(function () {
+    return null;
+  });
+
+  if (!response.ok) {
+    const error = new Error(
+      result && result.message
+        ? result.message
+        : "Impossible d'enregistrer cet utilisateur."
+    );
+
+    error.status = response.status;
+    throw error;
+  }
+
+  if (!result || !result.data || !result.data._id) {
+    throw new Error("Réponse du serveur invalide. Rechargez la liste.");
+  }
+
+  return result.data;
+}

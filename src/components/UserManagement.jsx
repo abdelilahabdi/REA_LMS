@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { getUsers } from "../services/api";
+import { getUsers , saveUser } from "../services/api";
 import UserList from "./UserList";
-
+import UserForm from "./UserForm";
 function UserManagement(props) {
   const [users, setUsers] = useState([]);
   const [roleFilter, setRoleFilter] = useState("");
@@ -12,13 +12,21 @@ function UserManagement(props) {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState("");
 
+
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [success, setSuccess] = useState("");
+
   async function handleLoadUsers() {
-    if (isLoading) {
+    if (isLoading || isFormOpen) {
       return;
     }
 
     setIsLoading(true);
     setError("");
+    setSuccess("");
+    setIsFormOpen(false);
+    setEditingUser(null);
     setHasLoaded(false);
     setUsers([]);
     setSelectedId(null);
@@ -63,6 +71,59 @@ function UserManagement(props) {
     setSelectedId(null);
   }
 
+  function handleCreateUser() {
+  setEditingUser(null);
+  setSuccess("");
+  setIsFormOpen(true);
+}
+
+function handleEditUser() {
+  setEditingUser(selectedUser);
+  setSuccess("");
+  setIsFormOpen(true);
+}
+
+function handleCancelForm() {
+  setIsFormOpen(false);
+  setEditingUser(null);
+}
+
+async function handleSaveUser(values) {
+  setSuccess("");
+
+  try {
+    const userId = editingUser ? editingUser._id : null;
+    const savedUser = await saveUser(props.token, userId, values);
+
+    setUsers(function (currentUsers) {
+      if (!userId) {
+        return [savedUser, ...currentUsers];
+      }
+
+      return currentUsers.map(function (user) {
+        if (user._id === savedUser._id) {
+          return savedUser;
+        }
+
+        return user;
+      });
+    });
+
+    setRoleFilter("");
+    setStatusFilter("");
+    setSelectedId(savedUser._id);
+    setIsFormOpen(false);
+    setEditingUser(null);
+    setSuccess(userId ? "Apprenant modifié." : "Apprenant créé.");
+  } catch (error) {
+    if (error.status === 401) {
+      props.onSessionExpired();
+    }
+
+    throw error;
+  }
+}
+
   const filteredUsers = users.filter(function (user) {
     const matchesRole =
       roleFilter === "" || user.role === roleFilter;
@@ -80,11 +141,31 @@ function UserManagement(props) {
   return (
     <section>
       <h3>Gestion des utilisateurs</h3>
+       
+
+       {success && <p role="status">{success}</p>}
+
+{hasLoaded && !isFormOpen && (
+  <button type="button" onClick={handleCreateUser}>
+    Ajouter un apprenant
+  </button>
+)}
+
+             {isFormOpen && (
+             <UserForm
+    key={editingUser ? editingUser._id : "new"}
+    initialData={editingUser}
+    onSubmit={handleSaveUser}
+    onCancel={handleCancelForm}
+                />
+     )}
+
+
 
       <button
         type="button"
         onClick={handleLoadUsers}
-        disabled={isLoading}
+        disabled={isLoading || isFormOpen}
       >
         {isLoading ? "Chargement..." : "Charger les utilisateurs"}
       </button>
@@ -158,6 +239,13 @@ function UserManagement(props) {
                 <p>Email : {selectedUser.email}</p>
                 <p>Rôle : {selectedUser.role}</p>
                 <p>Statut : {selectedUser.status}</p>
+                  
+                  {selectedUser.role === "learner" && !isFormOpen && (
+  <button type="button" onClick={handleEditUser}>
+    Modifier
+  </button>
+)} 
+
 
                 <button type="button" onClick={handleCloseDetails}>
                   Fermer
@@ -168,7 +256,7 @@ function UserManagement(props) {
         </div>
       )}
     </section>
-  );
+);
 }
 
 export default UserManagement;
