@@ -167,3 +167,83 @@ export async function saveUser(token, userId, values) {
 
   return result.data;
 }
+
+
+
+async function adminCourseRequest(token, path, method, values) {
+  const options = {
+    method: method,
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  if (values !== undefined) {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(values);
+  }
+
+  const response = await fetch(
+    API_URL + "/admin/courses" + path,
+    options
+  );
+
+  const result = await response.json().catch(function () {
+    return null;
+  });
+
+  if (!response.ok) {
+    const error = new Error(
+      result && result.message
+        ? result.message
+        : "Impossible de traiter la demande."
+    );
+
+    error.status = response.status;
+    throw error;
+  }
+
+  if (!result || result.data === undefined) {
+    throw new Error("Réponse du serveur invalide. Rechargez la liste.");
+  }
+
+  return result.data;
+}
+
+export async function getAdminCourses(token) {
+  const courses = await adminCourseRequest(token, "", "GET");
+
+  if (!Array.isArray(courses)) {
+    throw new Error("Liste des cours invalide.");
+  }
+
+  return courses;
+}
+
+export async function saveCourse(token, courseId, values) {
+  const path = courseId ? "/" + courseId : "";
+  const method = courseId ? "PUT" : "POST";
+
+  const course = await adminCourseRequest(token, path, method, values);
+
+  if (!course || !course._id) {
+    throw new Error("Réponse du serveur invalide. Rechargez la liste.");
+  }
+
+  return course;
+}
+
+export async function changeCourseStatus(token, courseId, status) {
+  const course = await adminCourseRequest(
+    token,
+    "/" + courseId + "/status",
+    "PATCH",
+    { status: status }
+  );
+
+  if (!course || !course._id) {
+    throw new Error("Réponse du serveur invalide. Rechargez la liste.");
+  }
+
+  return course;
+}

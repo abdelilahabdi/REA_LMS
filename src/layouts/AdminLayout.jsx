@@ -1,4 +1,4 @@
-import CourseCatalog from "../CourseCatalog";
+import CourseManagement from "../components/CourseManagement";
 import UserManagement from "../components/UserManagement";
 
 function AdminLayout(props) {
@@ -56,7 +56,10 @@ function AdminLayout(props) {
       )}
 
       {props.currentView === "courses" && (
-        <CourseCatalog />
+        <CourseManagement
+        token={props.token}
+        onSessionExpired={props.onSessionExpired}
+        />
       )}
     </section>
   );
