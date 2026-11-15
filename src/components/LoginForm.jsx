@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { loginUser , getMyProfile } from "../services/api";
 
-function loginForm(props) {
+function LoginForm(props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -96,4 +96,4 @@ function loginForm(props) {
     );
 }
 
-export default loginForm;
+export default LoginForm;

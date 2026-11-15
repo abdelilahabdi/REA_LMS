@@ -154,7 +154,9 @@ function CourseManagement(props) {
       setEditingCourse(null);
       setSuccess(courseId ? "Cours modifié." : "Cours créé en brouillon.");
     } catch (error) {
-      throw new Error(getErrorMessage(error));
+      throw new Error(getErrorMessage(error), {
+        cause: error,
+      });
     }
   }
 
