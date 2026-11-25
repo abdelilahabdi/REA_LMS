@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { loginUser , getMyProfile } from "../services/api";
-
-function LoginForm(props) {
+//import { loginUser , getMyProfile } from "../services/api";
+import useAuth from "../hooks/useAuth";
+function LoginForm() {
+    const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -17,39 +18,32 @@ function LoginForm(props) {
         setError("");
 
         if (email.trim() === "" || password === "") {
-            setError("email et mot de passe obligatoires") ;
-            return;
-        }
+    setError("Email et mot de passe obligatoires.");
+    return;
+  }
 
-        setIsLoading(true);
+  const submittedPassword = password;
 
-        try {
-            const loginData = await loginUser(email.trim(), password);
+  setPassword("");
+  setIsLoading(true);
 
-            setPassword("");
-
-            const user = await getMyProfile(loginData.token);
-
-            props.onLogin({
-                token: loginData.token,
-                user: user,
-            });
-
-        } catch (error) {
-            if (error.status === 401) {
-                setError("email ou mot de passe incorrect");
-            } else if (error.status === 403) {
-                setError("acces refuse : compte suspendu ");
-            } else if (error instanceof TypeError) {
-                setError("connexion au server impossible") ;
-            } else {
-                setError(error.message);
-            }
-        } finally {
-            setPassword("");
-            setIsLoading(false);
-        }
+  try {
+    await login(email.trim(), submittedPassword);
+  } catch (error) {
+    if (error.status === 401) {
+      setError("Connexion refusée. Vérifiez vos identifiants.");
+    } else if (error.status === 403) {
+      setError("Accès refusé. " + error.message);
+    } else if (error instanceof TypeError) {
+      setError("Connexion au serveur impossible.");
+    } else {
+      setError(error.message);
     }
+  } finally {
+    setIsLoading(false);
+  }
+}
+    
 
     return (
         <section>

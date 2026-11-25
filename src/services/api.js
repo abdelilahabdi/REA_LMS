@@ -54,18 +54,20 @@ export async function loginUser(email, password) {
  }
 }
 
-export async function getMyProfile (token) {
+export async function getMyProfile (token , signal) {
 
   try {
     const response = await axios.get(API_URL + "/auth/me" , {
         headers: {
             Authorization : "Bearer " + token,
         },
+        signal: signal,
+        timeout: 15000,
     });
 
     const result = response.data;
 
-    if (!result || !result.data || !result.data.role ) {
+    if (!result || !result.data || !result.data.id || !result.data.role ) {
          throw new Error("Réponse du profil invalide.");
         
     }
