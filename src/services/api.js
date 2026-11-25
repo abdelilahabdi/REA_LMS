@@ -1,48 +1,78 @@
+import axios from "axios" ;
+
+
 const API_URL = "http://localhost:3000/api";
 
-export async function loginUser(email, password) {
-    const response = await fetch(API_URL + "/auth/login", {
-        method: "POST",
-        headers: {
-            "Content-Type" : "application/json",
-        },
 
-        body: JSON.stringify({
-            email: email,
-            password: password,
-        }),
+
+function prepareApiError (error , defaultMessage) {
+  if (axios.isCancel(error)) {
+    return error ;
+  }
+
+  if (error.response) {
+    let message = defaultMessage;
+
+    const result = error.response.data;
+
+    if (result && typeof result.message === "string") {
+      message = result.message;
+    }
+
+
+    const apiError = new Error(message, {cause: error});
+    apiError.status = error.response.status;
+
+    return apiError ;
+  }
+
+  if (error.request) {
+    return new TypeError("connexion au serveur impossible", {
+      cause: error,
+    });
+  }
+ return error;
+
+}
+export async function loginUser(email, password) {
+
+  try {
+    const response = await axios.post(API_URL + "/auth/login", {
+        email : email ,
+        password : password ,
     });
 
-    const result = await response.json();
+    const result = response.data;
 
-    if(!response.ok) {
-        const error = new Error(result.message || "Connexion impossible");
-        error.status = response.status;
-        throw error;
+    if(!result || !result.data || !result.data.token) {
+        throw new Error("Reponse de connexion invalide");
     }
     return result.data;
-
-
     
+}catch (error) {
+  throw prepareApiError (error, "connexion impossible");
+ }
 }
 
 export async function getMyProfile (token) {
-    const response = await fetch (API_URL + "/auth/me" , {
+
+  try {
+    const response = await axios.get(API_URL + "/auth/me" , {
         headers: {
             Authorization : "Bearer " + token,
         },
     });
 
-    const result = await response.json();
+    const result = response.data;
 
-    if (!response.ok) {
-        const error = new Error(
-            result.message || "Impossible de charger le profil"
-        );
-        error.status = response.status;
-        throw error ;
+    if (!result || !result.data || !result.data.role ) {
+         throw new Error("Réponse du profil invalide.");
+        
     }
     return result.data ;
+} catch (error) {
+     throw prepareApiError(error, "Impossible de charger le profil.");
+}
 }
 
 
