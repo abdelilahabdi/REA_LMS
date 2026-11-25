@@ -77,84 +77,63 @@ export async function getMyProfile (token) {
 
 
 export async function getCourses() {
-  const response = await fetch(API_URL + "/courses");
-  const result = await response.json();
+  try {
+  const response = await axios.get(API_URL + "/courses");
+  const result = await response.data;
 
-  if (!response.ok) {
-    const error = new Error(
-      result.message || "Impossible de charger les cours."
-    );
-
-    error.status = response.status;
-    throw error;
+  if (!result || !Array.isArray(result.data)) {
+     throw new Error("Le serveur a renvoyé une liste de cours invalide.");
   }
-
-  if (!Array.isArray(result.data)) {
-    throw new Error("Le serveur a renvoyé une liste de cours invalide.");
-  }
-
-  return result.data;
+    
+ return result.data;
+} catch (error) {
+  throw prepareApiError(error, "Impossible de charger les cours.");
+}
 }
 
+  
+
 export async function getMyEnrollments(token) {
-  const response = await fetch(API_URL + "/enrollments/me", {
+  try {
+  const response = await axios.get(API_URL + "/enrollments/me", {
     headers: {
       Authorization: "Bearer " + token,
     },
   });
 
   
-  const result = await response.json().catch(function () {
-    return null;
-  });
-
-  if (!response.ok) {
-    const message =
-      result && result.message
-        ? result.message
-        : "Impossible de charger vos inscriptions.";
-
-    const error = new Error(message);
-    error.status = response.status;
-
-    throw error;
-  }
+  const result = response.data ;
+  
 
   if (!Array.isArray(result)) {
-    throw new Error("Le serveur a renvoyé une liste invalide.");
-  }
+    throw new Error("Le serveur a renvoyé une liste d'inscriptions invalide.");
+    }
+    return result;
 
-  return result;
+} catch (error) {
+    throw prepareApiError(error, "Impossible de charger vos inscriptions.");
+  }
 }
 
+
 export async function getUsers(token) {
-  const response = await fetch(API_URL + "/users", {
+  try {
+  const response = await axios.get(API_URL + "/users", {
     headers: {
       Authorization: "Bearer " + token,
     },
   });
 
-  const result = await response.json().catch(function () {
-    return null;
-  });
-
-  if (!response.ok) {
-    const message =
-      result && result.message
-        ? result.message
-        : "Impossible de charger les utilisateurs.";
-
-    const error = new Error(message);
-    error.status = response.status;
-
-    throw error;
-  }
+ const result = response.data ;
 
   if (!result || !Array.isArray(result.data)) {
-    throw new Error("Le serveur a renvoyé une liste invalide.");
+    throw new Error("Le serveur a renvoyé une liste d'utilisateurs invalide.");
   }
 
   return result.data;
+  } catch (error) {
+    throw prepareApiError(error, "Impossible de charger les utilisateurs.");
+  }
 }
 
 
@@ -166,78 +145,52 @@ export async function saveUser(token, userId, values) {
     path = "/users/" + userId;
     method = "PUT";
   }
+   
+  try {
+    const response = await axios({
+      url: API_URL + path,
+      method: method,
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      data: values,
+    });
 
-  const response = await fetch(API_URL + path, {
-    method: method,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-    body: JSON.stringify(values),
-  });
+    const result = response.data;
 
-  const result = await response.json().catch(function () {
-    return null;
-  });
+    if (!result || !result.data || !result.data._id) {
+      throw new Error("Réponse du serveur invalide. Rechargez la liste.");
+    }
 
-  if (!response.ok) {
-    const error = new Error(
-      result && result.message
-        ? result.message
-        : "Impossible d'enregistrer cet utilisateur."
-    );
-
-    error.status = response.status;
-    throw error;
+    return result.data;
+  } catch (error) {
+    throw prepareApiError(error, "Impossible d'enregistrer cet utilisateur.");
   }
-
-  if (!result || !result.data || !result.data._id) {
-    throw new Error("Réponse du serveur invalide. Rechargez la liste.");
-  }
-
-  return result.data;
 }
 
 
 
 async function adminCourseRequest(token, path, method, values) {
-  const options = {
-    method: method,
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  };
+  try {
+   const response = await axios({
+      url: API_URL + "/admin/courses" + path,
+      method: method,
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      data: values,
+    });
 
-  if (values !== undefined) {
-    options.headers["Content-Type"] = "application/json";
-    options.body = JSON.stringify(values);
+    const result = response.data;
+
+    if (!result || result.data === undefined) {
+      throw new Error("Réponse du serveur invalide. Rechargez la liste.");
+    }
+
+    return result.data;
+  } catch (error) {
+    throw prepareApiError(error, "Impossible de traiter la demande.");
   }
-
-  const response = await fetch(
-    API_URL + "/admin/courses" + path,
-    options
-  );
-
-  const result = await response.json().catch(function () {
-    return null;
-  });
-
-  if (!response.ok) {
-    const error = new Error(
-      result && result.message
-        ? result.message
-        : "Impossible de traiter la demande."
-    );
-
-    error.status = response.status;
-    throw error;
-  }
-
-  if (!result || result.data === undefined) {
-    throw new Error("Réponse du serveur invalide. Rechargez la liste.");
-  }
-
-  return result.data;
 }
 
 export async function getAdminCourses(token) {
@@ -251,10 +204,20 @@ export async function getAdminCourses(token) {
 }
 
 export async function saveCourse(token, courseId, values) {
-  const path = courseId ? "/" + courseId : "";
-  const method = courseId ? "PUT" : "POST";
+  let path =  "";
+  let method =  "POST";
 
-  const course = await adminCourseRequest(token, path, method, values);
+  if (courseId) {
+    path = "/" + courseId;
+    method = "PUT";
+  }
+
+  const course = await adminCourseRequest(
+    token,
+    path,
+    method,
+    values
+  );
 
   if (!course || !course._id) {
     throw new Error("Réponse du serveur invalide. Rechargez la liste.");
