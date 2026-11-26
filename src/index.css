@@ -235,3 +235,30 @@ textarea:focus-visible {
     flex-direction: column;
   }
 }
+
+
+.admin-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.admin-navigation a {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #1e293b;
+}
+
+.admin-navigation a.active {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.admin-navigation a:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 3px;
+}
