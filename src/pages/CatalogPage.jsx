@@ -183,6 +183,9 @@ function CatalogPage() {
                 <p>
                   Niveau : {levelLabels[course.level] || course.level}
                 </p>
+                <Link to={"/courses/" + course._id}>
+                   Voir les détails
+                </Link>
               </article>
             );
           })}

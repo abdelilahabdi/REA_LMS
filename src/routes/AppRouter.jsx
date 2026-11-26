@@ -8,6 +8,7 @@ import UserManagement from "../components/UserManagement";
 import CourseManagement from "../components/CourseManagement";
 import useAuth from "../hooks/useAuth";
 import CatalogPage from "../pages/CatalogPage";
+import CourseDetailPage from "../pages/CourseDetailPage";
 function HomePage() {
   const { isAuthenticated } = useAuth();
 
@@ -88,6 +89,11 @@ function AppRouter() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/courses" element={<CatalogPage />} />
+
+      <Route
+        path="/courses/:courseId"
+        element={<CourseDetailPage />}
+       />
 
 
       <Route element={<ProtectedRoute />}>

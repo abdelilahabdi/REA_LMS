@@ -85,7 +85,7 @@ export async function getCourses(params = {} , signal) {
     signal: signal,
     timeout: 15000,
   });
-  
+
   const result = await response.data;
 
   if (!result || !Array.isArray(result.data)) {
@@ -246,4 +246,29 @@ export async function changeCourseStatus(token, courseId, status) {
   }
 
   return course;
+}
+
+
+export async function  getCourseById(courseId , signal) {
+  try {
+    const response = await axios.get(
+      API_URL + "/courses/" + encodeURIComponent(courseId),
+
+      {
+        signal: signal,
+        timeout: 15000,
+      }
+    );
+
+    const result = response.data;
+
+    if(!result || !result.data || !result.data._id) {
+      throw new Error("les détails du cours sont invalides") ;
+    }
+
+    return result.data;
+  }catch (error) {
+    throw prepareApiError(error , "impossible de charger les détails du cours");
+
+  }
 }
