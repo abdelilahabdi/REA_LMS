@@ -262,3 +262,11 @@ textarea:focus-visible {
   outline: 3px solid #f59e0b;
   outline-offset: 3px;
 }
+
+.catalog-card {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}

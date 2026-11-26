@@ -78,9 +78,14 @@ export async function getMyProfile (token , signal) {
 }
 
 
-export async function getCourses() {
+export async function getCourses(params = {} , signal) {
   try {
-  const response = await axios.get(API_URL + "/courses");
+  const response = await axios.get(API_URL + "/courses", {
+    params: params,
+    signal: signal,
+    timeout: 15000,
+  });
+  
   const result = await response.data;
 
   if (!result || !Array.isArray(result.data)) {

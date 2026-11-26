@@ -7,7 +7,7 @@ import LoginPage from "../pages/LoginPage";
 import UserManagement from "../components/UserManagement";
 import CourseManagement from "../components/CourseManagement";
 import useAuth from "../hooks/useAuth";
-
+import CatalogPage from "../pages/CatalogPage";
 function HomePage() {
   const { isAuthenticated } = useAuth();
 
@@ -21,6 +21,9 @@ function HomePage() {
     <main>
       <h1>EduLearn</h1>
       <p>Bienvenue sur notre plateforme de formation.</p>
+      <p>
+        <Link to="/courses">Explorer le catalogue</Link>
+      </p>
       <Link to="/login">{linkText}</Link>
     </main>
   );
@@ -84,6 +87,8 @@ function AppRouter() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <Route path="/courses" element={<CatalogPage />} />
+
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AuthenticatedLayout />}>
